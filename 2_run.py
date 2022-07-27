@@ -94,7 +94,7 @@ def run_ql_mod(
             #  randomChoiceRate = (simPerBlock - s - 1.0)/
             # (simPerBlock - s + 1.0) #1.0/(0.015*s + 1.0)
             # added to check if this is Q-Learning 2021.08.03
-            randomChoiceRate = 0.0
+            # randomChoiceRate = 0.0
             optimalChoiceRate = 1.0 - randomChoiceRate
             case = QLearning(
                 agentsProfileName=agentsProfileName,
