@@ -2,10 +2,16 @@
 # -*- coding: utf-8 -*-
 # file also known as main_ql_mod.py
 
-import numpy as np
+import getopt
 import os
-from qlearn import QLearning
+import sys
 import time
+from datetime import datetime
+
+import numpy as np
+
+import send_email as se
+from qlearn import QLearning
 
 
 def run_ql_mod(
@@ -182,7 +188,7 @@ def arahama_ql_mod():
 
     numSim0 = 0
     numBlocks = 1
-    simPerBlock = 10
+    simPerBlock = 1000
 
     name = f"ql_mod_{simtime}_{meandeparture}_{simPerBlock}"
     area = "arahama"
@@ -222,9 +228,30 @@ def new_kochi_ql_mod():
     return
 
 
-if __name__ == "__main__":
-    t = time.time()
-    # arahama_ql_mod()
+def check_args(argv):
+    try:
+        opts, args = getopt.getopt(argv, "e")
+    except getopt.GetoptError:
+        print("Wrong argument: USAGE: '[filename].py -e' OR '[filename].py'")
+        sys.exit()
+    if not opts:
+        print("Email option OFF")
+        t = time.time()
+        main()
+        print(f"Time:{time.time()-t} s.")
+    else:
+        print("Email option ON")
+        t = time.time()
+        main()
+        now = datetime.now()
+        se.SendMail(MESSAGE=f"{now} - Time:{time.time()-t} s.")
+
+
+def main():
+    arahama_ql_mod()
     # kochi_ql_mod()
-    new_kochi_ql_mod()
-    print(f"Time:{time.time()-t} s.")
+    # new_kochi_ql_mod()
+
+
+if __name__ == "__main__":
+    check_args(sys.argv[1:])
