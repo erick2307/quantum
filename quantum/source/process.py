@@ -50,7 +50,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
         case.exportStateMatrix(outnamefile=outfile)
         print(
             f"""\n\n ***** Simu {numSim0:d}
-              (t= {(time.time()-t0)/60.0:.2f} min.)*****"""
+              (t= {(time.time()-t0):.2f} sec.)*****"""
         )
         print("epsilon greedy - exploration: %f" % randomChoiceRate)
         print(
@@ -75,7 +75,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
     numSim = numSim0 + 1
     for b in range(numBlocks):
         for s in range(simPerBlock):
-            eoe = int(0.8 * simPerBlock)  # end of exploration
+            eoe = int(par.GLIE_PERCENTAGE * simPerBlock)  # end of exploration
             if s < eoe:
                 randomChoiceRate = -1 / (eoe) ** 2 * s**2 + 1
             else:
@@ -109,8 +109,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
             outfile = Path(folderStateNames, "sim_%09d.csv" % numSim)
             case.exportStateMatrix(outnamefile=outfile)
             print(
-                "\n\n ***** Simu %d (t= %.2f min.)*****"
-                % (numSim, (time.time() - t0) / 60.0)
+                "\n\n ***** Simu %d (t= %.2f sec.)*****" % (numSim, (time.time() - t0))
             )
             print("epsilon greedy - exploration: %f" % randomChoiceRate)
             print(

@@ -57,8 +57,10 @@ def setMatrices(numcolumns=12):
         if nodesdb[i, 3]:
             actionsdb[i, 1] = 1
             actionsdb[i, 2] = -1
+            actionsdb[i, 3:] = 0
             transitionsdb[i, 1] = 1
             transitionsdb[i, 2] = actionsdb[i, 0]
+            transitionsdb[i, 3:] = 0
             # rewarddb[i,1] = 1
             # rewarddb[i,2] = 0
             continue

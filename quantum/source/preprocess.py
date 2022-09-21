@@ -228,16 +228,18 @@ def run():
     if shelters.empty:
         print("There are no shelters in the area. Input a list of node ids")
         # try block to handle the exception
-        try:
-            shelters_id = []
-
-            while True:
-                shelters_id.append(
-                    int(input("Enter a node number to become shelter or ENTER: "))
-                )
-        # if the input is not-integer, just print the list
-        except:
-            print("Shelter nodes:", shelters_id)
+        if par.SHELTER_ID_BOOL:
+            shelters_id = par.SHELTER_ID_LIST
+        else:
+            try:
+                shelters_id = []
+                while True:
+                    shelters_id.append(
+                        int(input("Enter a node number to become shelter or ENTER: "))
+                    )
+            # if the input is not-integer, just print the list
+            except:
+                print("Shelter nodes:", shelters_id)
         shelters = add_shelters(shelters_id)
     # Fix the nodesdb
     fixLinksDBAndNodesDB(shelters)

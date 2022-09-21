@@ -43,7 +43,7 @@ class QLearning:
         # Parameters to construct histograms of polations at every link: (1) unit length, (2) number of units
         self.popAtLink_HistParam = np.zeros((self.linksdb.shape[0], 2))
         self.popAtLink_HistParam[:, 1] = np.ceil(
-            self.linksdb[:, 3] / 2.0
+            self.linksdb[:, 3] / 2.0 + 1  # added +1  2022.09.21 for test only
         )  # assuming length units of about 2 meters
         self.popAtLink_HistParam[:, 0] = (
             self.linksdb[:, 3] / self.popAtLink_HistParam[:, 1]
@@ -470,7 +470,9 @@ class QLearning:
                 + (self.pedDB[pedIndx, 1] - y0L) ** 2
             ) ** 0.5
             unitL = self.popAtLink_HistParam[codeLink, 0]
-            xAtLink = int(np.floor(dist / unitL))
+            xAtLink = int(
+                np.floor(dist / unitL) - 1
+            )  # added -1 on 2022.09.21 due to errors on index in line 475
             speed = (
                 self.speArrPerLink[codeLink, xAtLink] + np.random.rand() * 0.02 - 0.01
             )
