@@ -73,7 +73,7 @@ This is a simplified {ntype} type OSM network."""
     return G_simple
 
 
-def getPrefShelters(pref_code=39, crs="EPSG:6690", filters=True):
+def getPrefShelters(pref_code=39, crs="EPSG:6690", filters=False):
     rootfolder = "/Volumes/Pegasus32/data/"
     datafolder = "PAREA_Hazard_2018/data/世界測地系"
     areafile = f"{pref_code:02d}/PHRP{pref_code:02d}18.shp"
@@ -89,13 +89,14 @@ def getAreaShelters(
     area={"north": 33.58, "south": 33.53, "east": 133.58, "west": 133.52},
     pref_code=39,
     crs="EPSG:6690",
+    filter_bool=False,
 ):
     bbox = createBoundingBox(area)
     bbox_gdf = gpd.GeoSeries(bbox)
     bbox_gdf.set_crs(par.WK_CRS, inplace=True)
     bbox_gdf = bbox_gdf.to_crs(crs)
     poly = shp.geometry.shape(bbox_gdf[0])
-    shelters = getPrefShelters(pref_code, crs)
+    shelters = getPrefShelters(pref_code, crs, filters=filter_bool)
     gs = gpd.GeoSeries(shelters.geometry)
     sh_in_area = shelters[gs.within(poly)]
     return sh_in_area
@@ -192,13 +193,13 @@ def cleanup():
         file.rename(Path(par.REF_FOLDER, file.name))
     for file in currentdir.glob("*.csv"):
         file.rename(Path(par.DATA_FOLDER, file.name))
-    for file in currentdir.glob("edges.*"):
+    for file in currentdir.glob("*.shp"):
         file.rename(Path(par.REF_FOLDER, file.name))
 
 
-def run():
+def run(aos_file):
     pref_code = par.PREF_CODE
-    aos_gdf = gpd.read_file(Path(par.CASE_FOLDER, "aos.geojson"), driver="GeoJSON")
+    aos_gdf = aos_file  # gpd.read_file(Path(par.CASE_FOLDER, "aos.geojson"), driver="GeoJSON")
     area = {
         "north": aos_gdf.total_bounds[3],
         "south": aos_gdf.total_bounds[1],
@@ -217,14 +218,15 @@ def run():
         par.PREF_CODE, par.AOS_FILE, par.WK_CRS, par.BEFORE_2011_BOOL
     )
     pop_pj = pop.to_crs(par.PJ_CRS)
-    # pop = gp.getPopulationArea(pref_code=pref_code, aos=aos, crs=crs)
     print(f"There is a population of {int(pop['TotalPop'].sum())} people.")
 
     # Create a Graph object
     G = createGraph(area=area, crs=crs, ntype=par.OSM_NTYPE, plot=False)
 
     # Create a Shelter GeoDataframe
-    shelters = getAreaShelters(area=area, pref_code=pref_code, crs=crs)
+    shelters = getAreaShelters(
+        area=area, pref_code=pref_code, crs=crs, filter_bool=par.FILTER_SHELTER_BOOL
+    )
     if shelters.empty:
         print("There are no shelters in the area. Input a list of node ids")
         # try block to handle the exception
@@ -257,4 +259,7 @@ def run():
         header="age,gender,hhType,hhId,Node",
         fmt="%d,%d,%d,%d,%d",
     )
-    cleanup()
+    # cleanup()
+    nodes, edges = ox.graph_to_gdfs(G)
+    # edges.reset_index(inplace=True)
+    return pop, shelters, edges, nodes

@@ -4,6 +4,7 @@ from pathlib import Path
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import params as par
+import source.preprocess as pre
 
 plt.style.use("default")
 
@@ -31,8 +32,11 @@ def create_folder(dirname):
     Path(dirname).mkdir(parents=True, exist_ok=True)
 
 
-def save_to_case_folder(data, filename):
-    data.to_file(Path(par.CASE_FOLDER, f"{filename}.geojson"), driver="GeoJSON")
+def save_to_case_folder(data, filename, driver="GeoJSON"):
+    if driver == "GeoJSON":
+        data.to_file(Path(par.CASE_FOLDER, f"{filename}.geojson"), driver=driver)
+    if driver == "SHP":
+        data.to_file(Path(par.CASE_FOLDER, f"{filename}.shp"))
 
 
 def get_case_date(timestamp):
@@ -42,41 +46,54 @@ def get_case_date(timestamp):
 
 ########################################################################
 def run():
-    if par.CASE_NAME == "kochi":
-        aos = gpd.read_file(par.AOS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        census = gpd.read_file(par.CENSUS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        shelters = gpd.read_file(par.SHELTERS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        mesh = gpd.read_file(par.MESH_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        town = gpd.read_file(par.TOWN_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        edges = gpd.read_file(par.EDGES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        nodes = gpd.read_file(par.NODES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-
-    if par.CASE_NAME == "arahama":
-        aos = gpd.read_file(par.AOS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        census = gpd.read_file(par.CENSUS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        shelters = gpd.read_file(par.SHELTERS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        mesh = gpd.read_file(par.MESH_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        # shi_town = gpd.read_file(par.TOWN_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        # edges = gpd.read_file(par.EDGES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-        # nodes = gpd.read_file(par.NODES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-
-    if par.CLIP_TO_AOS_BOOL:
-        census = census.clip(aos)
-        shelters = shelters.clip(aos)
-        mesh = mesh.clip(aos)
-        # edges = edges.clip(aos)
-        # nodes = nodes.clip(aos)
-        # town = shi_town.clip(aos)
-
     # create a folder based on the date and case name
     par.START_DATE = datetime.now()
     par.CASE_FOLDER = f"{str(round(par.START_DATE.timestamp()*1000))}_{par.CASE_NAME}"
     create_folder(dirname=par.CASE_FOLDER)
     print(f"Case started on {par.START_DATE}")
+
+    aos = gpd.read_file(par.AOS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+    census, shelters, edges, nodes = pre.run(aos)
+
     save_to_case_folder(aos, "aos")
     save_to_case_folder(census, "census")
     save_to_case_folder(shelters, "shelters")
-    save_to_case_folder(mesh, "mesh")
-    # save_to_case_folder(edges, 'edges')
-    # save_to_case_folder(nodes, 'nodes')
-    # save_to_case_folder(town, 'town')
+    # save_to_case_folder(mesh, "mesh")
+    save_to_case_folder(edges, "edges", driver="SHP")
+    save_to_case_folder(nodes, "nodes", driver="SHP")
+    # save_to_case_folder(town, "town")
+
+    pre.cleanup()
+
+    # if not check_file(par.CENSUS_FILE):
+    #     # get census
+    #     pass
+    # census = gpd.read_file(par.CENSUS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+    # if not check_file(par.SHELTERS_FILE):
+    #     # get shelters
+    #     pass
+    # shelters = gpd.read_file(par.SHELTERS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+    # if not check_file(par.MESH_FILE):
+    #     # get mesh
+    #     pass
+    # mesh = gpd.read_file(par.MESH_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+    # if not check_file(par.TOWN_FILE):
+    #     # get town
+    #     pass
+    # town = gpd.read_file(par.TOWN_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+    # if not check_file(par.EDGES_FILE):
+    #     # get edges
+    #     pass
+    # edges = gpd.read_file(par.EDGES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+    # if not check_file(par.NODES_FILE):
+    #     # get nodes
+    #     pass
+    # nodes = gpd.read_file(par.NODES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
+
+    # if par.CLIP_TO_AOS_BOOL:
+    #     census = census.clip(aos)
+    #     shelters = shelters.clip(aos)
+    #     mesh = mesh.clip(aos)
+    #     town = town.clip(aos)
+    #     edges = edges.clip(aos)
+    #     nodes = nodes.clip(aos)
