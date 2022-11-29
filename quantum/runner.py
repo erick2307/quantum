@@ -16,9 +16,9 @@ if __name__ == "__main__":
             source.dataset.run()
             # source.preprocess.run()
             print(f"Preprocess finished in {time.time() - start} sec.")
-            # source.process.run()
+            source.process.run()
             if par.EMAIL_BOOL:
-                pwd = os.environ.get("IRIDES_EMAIL_PWD")
+                pwd = os.environ.get(par.EMAIL_PWD)
                 end = time.time() - start
                 msg = f"Experiment {i}: {exp} runs finished on {end:.2f} sec."
                 source.send_email.SendMail(PASSWORD=pwd, MESSAGE=msg)

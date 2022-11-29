@@ -1,13 +1,13 @@
 import os
 import smtplib
-
+import params as par
 
 def SendMail(
-    HOST="mail.irides.tohoku.ac.jp",
-    PORT=587,
-    SENDER="mas@irides.tohoku.ac.jp",
-    PASSWORD=None,
-    RECIPIENT="mas@irides.tohoku.ac.jp",
+    HOST=par.SERVER_HOST,
+    PORT=par.PORT,
+    SENDER=par.EMAIL,
+    PASSWORD=par.EMAIL_PWD,
+    RECIPIENT=par.EMAIL,
     MESSAGE="Your simulation has finished",
 ):
     server = smtplib.SMTP(host=HOST, port=PORT)
@@ -22,5 +22,5 @@ def SendMail(
 
 
 if __name__ == "__main__":
-    pwd = os.environ.get("IRIDES_EMAIL_PWD")
+    pwd = os.environ.get(par.EMAIL_PWD)
     SendMail(PASSWORD=pwd)

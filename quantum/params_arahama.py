@@ -1,6 +1,6 @@
 # Input parameters
 CASE_NAME = "arahama"
-PREF_CODE = 4  # Miyagi is 4, Kochi is 39
+PREF_CODE = 4  # Miyagi is 4, Kochi is 39, Fukushima is 7
 
 # Run conditions
 MULTIPLE_RUNS_BOOL = True  # ! requires a list in NUM_SIM_PER_BLOCK
@@ -10,6 +10,7 @@ EMAIL_BOOL = True
 BEFORE_2011_BOOL = True  # in case population should be before 3.11
 SHELTER_ID_BOOL = True  # if True read list from SHELTER_ID_LIST variable
 # if False proompots for id nodes
+FILTER_SHELTER_BOOL = True
 SHELTER_ID_LIST = [337]
 
 # Run options

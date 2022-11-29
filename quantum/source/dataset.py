@@ -59,8 +59,8 @@ def run():
     save_to_case_folder(census, "census")
     save_to_case_folder(shelters, "shelters")
     # save_to_case_folder(mesh, "mesh")
-    save_to_case_folder(edges, "edges", driver="SHP")
-    save_to_case_folder(nodes, "nodes", driver="SHP")
+    # save_to_case_folder(edges, "edges", driver="SHP")
+    # save_to_case_folder(nodes, "nodes", driver="SHP")
     # save_to_case_folder(town, "town")
 
     pre.cleanup()
