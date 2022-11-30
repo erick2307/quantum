@@ -14,7 +14,6 @@ if __name__ == "__main__":
             par.NUM_SIM_PER_BLOCK = exp
             start = time.time()
             source.dataset.run()
-            # source.preprocess.run()
             print(f"Preprocess finished in {time.time() - start} sec.")
             source.process.run()
             if par.EMAIL_BOOL:

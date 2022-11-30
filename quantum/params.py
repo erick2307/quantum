@@ -32,8 +32,8 @@ EDGES_FILE = "/Volumes/Pegasus32/kochi/road/pref/kochi_edges_crs6690.geojson"
 NODES_FILE = "/Volumes/Pegasus32/kochi/road/pref/kochi_nodes_crs6690.geojson"
 
 # Scenario parameters
-SIM_TIME = 30  # in minutes
-MEAN_DEPARTURE = 15  # in minutes
+SIM_TIME = 15  # in minutes
+MEAN_DEPARTURE = 5  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
 NUM_SIM_PER_BLOCK = [10]  # 5hr, 2d 2h, 20d
@@ -53,5 +53,6 @@ STEP_REWARD = -1  # original -1
 CASE_FOLDER = ""
 DATA_FOLDER = ""
 REF_FOLDER = ""
+WEIGHT_FOLDER = ""
 START_DATE = None
 GRAPH_FILE = None

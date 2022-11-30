@@ -9,16 +9,17 @@ import pickle
 from pathlib import Path
 
 
-def createVideo(filename, foldername, method='ql',area="kochi",
-                simtime=30, meandeparture=15):
+def createVideo(
+    filename, foldername, method="ql", area="kochi", simtime=30, meandeparture=15
+):
     # setup
     t0 = time.time()
     fn = Path(area, foldername, filename)
     videoNamefile = f"{method}_{area}_{filename[:-4]}.mp4"
     optimalChoiceRate = 0.99
     randomChoiceRate = 1.0 - optimalChoiceRate
-    meanRayleighTest = meandeparture*60
-    simulTime = simtime*60
+    meanRayleighTest = meandeparture * 60
+    simulTime = simtime * 60
 
     # load files
     agentsProfileName = os.path.join(area, "data", "agentsdb.csv")
@@ -35,14 +36,16 @@ def createVideo(filename, foldername, method='ql',area="kochi",
     if not os.path.exists(figuresfolder):
         os.mkdir(figuresfolder)
 
-    case = QLearning(agentsProfileName=agentsProfileName,
+    case = QLearning(
+        agentsProfileName=agentsProfileName,
         nodesdbFile=nodesdbFile,
         linksdbFile=linksdbFile,
         transLinkdbFile=transLinkdbFile,
         transNodedbFile=transNodedbFile,
         meanRayleigh=meanRayleighTest,
         discount=0.9,
-        folderStateNames=foldername)
+        folderStateNames=foldername,
+    )
 
     # input policy
     case.loadStateMatrixFromFile(namefile=fn)
@@ -58,8 +61,9 @@ def createVideo(filename, foldername, method='ql',area="kochi",
     for t in range(int(min(case.pedDB[:, 9])), simulTime):
         case.initEvacuationAtTime()
         case.stepForward()
-        optimalChoice = bool(np.random.choice(2,
-                             p=[randomChoiceRate, optimalChoiceRate]))
+        optimalChoice = bool(
+            np.random.choice(2, p=[randomChoiceRate, optimalChoiceRate])
+        )
         case.checkTarget(ifOptChoice=optimalChoice)
         if not t % 10:
             print(t)
@@ -95,9 +99,15 @@ def main():
     timeSimulation = 60  # total time of simulation in minutes
     meandeparture = 5  # this is the actual evacuation behavior in minutes
     # (not necessary the trained behavior)
-    method = 'ql'
-    createVideo(filename=filename, foldername=foldername, method=method, area=area,
-                simtime=timeSimulation, meandeparture=meandeparture)
+    method = "ql"
+    createVideo(
+        filename=filename,
+        foldername=foldername,
+        method=method,
+        area=area,
+        simtime=timeSimulation,
+        meandeparture=meandeparture,
+    )
     return
 
 

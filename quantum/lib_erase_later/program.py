@@ -1,23 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# file also known as main_ql_mod.py
+
+import os
 import time
-from pathlib import Path
 
 import numpy as np
-import params as par
 
-from .qlearn import QLearning
+from qlearn import QLearning
 
 
-def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
+def run_ql_mod(
+    area="kochi",
+    simtime=30,
+    meandeparture=15,
+    numSim0=0,
+    numBlocks=5,
+    simPerBlock=1000,
+    name="r",
+):
     t0 = time.time()
-    agentsProfileName = Path(par.DATA_FOLDER, "agentsdb.csv")
-    nodesdbFile = Path(par.DATA_FOLDER, "nodesdb.csv")
-    linksdbFile = Path(par.DATA_FOLDER, "linksdb.csv")
-    transLinkdbFile = Path(par.DATA_FOLDER, "actionsdb.csv")
-    transNodedbFile = Path(par.DATA_FOLDER, "transitionsdb.csv")
-    folderStateNames = Path(par.CASE_FOLDER, f"state_{name}")
-    Path(folderStateNames).mkdir(parents=True, exist_ok=True)
+    agentsProfileName = os.path.join(area, "data", "agentsdb.csv")
+    nodesdbFile = os.path.join(area, "data", "nodesdb.csv")
+    linksdbFile = os.path.join(area, "data", "linksdb.csv")
+    transLinkdbFile = os.path.join(area, "data", "actionsdb.csv")
+    transNodedbFile = os.path.join(area, "data", "transitionsdb.csv")
+    folderStateNames = os.path.join(area, f"state_{name}")
+    if not os.path.exists(folderStateNames):
+        os.mkdir(folderStateNames)
     meanRayleighTest = meandeparture * 60
-    simulTime = simtime * 60  # step is in seconds
+    simulTime = simtime * 60
     survivorsPerSim = []
 
     if numSim0 == 0:
@@ -30,7 +42,8 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
             transLinkdbFile=transLinkdbFile,
             transNodedbFile=transNodedbFile,
             meanRayleigh=meanRayleighTest,
-            discount=par.DISCOUNT_RATE,
+            discount=0.9,
+            folderStateNames=folderStateNames,
         )
 
         totalagents = np.sum(case.pedDB.shape[0])
@@ -42,15 +55,15 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
                 np.random.choice(2, 1, p=[randomChoiceRate, optimalChoiceRate])
             )
             case.checkTarget(ifOptChoice=optimalChoice)
-            if not t % par.FREQ_HISTOGRAM:
+            if not t % 10:
                 case.computePedHistDenVelAtLinks()
                 case.updateVelocityAllPedestrians()
 
-        outfile = Path(folderStateNames, "sim_%09d.csv" % numSim0)
+        outfile = os.path.join(folderStateNames, "sim_%09d.csv" % numSim0)
         case.exportStateMatrix(outnamefile=outfile)
         print(
             f"""\n\n ***** Simu {numSim0:d}
-              (t= {(time.time()-t0):.2f} sec.)*****"""
+              (t= {(time.time()-t0)/60.0:.2f})*****"""
         )
         print("epsilon greedy - exploration: %f" % randomChoiceRate)
         print(
@@ -60,7 +73,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
 
         survivorsPerSim.append([numSim0, np.sum(case.pedDB[:, 10] == 1)])
         fname = f"survivorsPerSim_{numBlocks}x{simPerBlock}.csv"
-        outSurvivors = Path(folderStateNames, fname)
+        outSurvivors = os.path.join(folderStateNames, fname)
         np.savetxt(outSurvivors, np.array(survivorsPerSim), delimiter=",", fmt="%d")
         evacs_list = [evacs[1] for evacs in survivorsPerSim]
         print(
@@ -75,11 +88,15 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
     numSim = numSim0 + 1
     for b in range(numBlocks):
         for s in range(simPerBlock):
-            eoe = int(par.GLIE_PERCENTAGE * simPerBlock)  # end of exploration
+            eoe = int(0.8 * simPerBlock)  # end of exploration
             if s < eoe:
                 randomChoiceRate = -1 / (eoe) ** 2 * s**2 + 1
             else:
                 randomChoiceRate = 0.0
+            #  randomChoiceRate = (simPerBlock - s - 1.0)/
+            # (simPerBlock - s + 1.0) #1.0/(0.015*s + 1.0)
+            # added to check if this is Q-Learning 2021.08.03
+            # randomChoiceRate = 0.0
             optimalChoiceRate = 1.0 - randomChoiceRate
             case = QLearning(
                 agentsProfileName=agentsProfileName,
@@ -88,10 +105,13 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
                 transLinkdbFile=transLinkdbFile,
                 transNodedbFile=transNodedbFile,
                 meanRayleigh=meanRayleighTest,
-                discount=par.DISCOUNT_RATE,
+                folderStateNames=folderStateNames,
             )
+
+            # Modified Oct 4, 2021
+            # Check best state and load that one
             index = evacs_list.index(max(evacs_list))
-            namefile = Path(folderStateNames, "sim_%09d.csv" % index)
+            namefile = os.path.join(folderStateNames, "sim_%09d.csv" % index)
             case.loadStateMatrixFromFile(namefile=namefile)
             totalagents = np.sum(case.pedDB.shape[0])
 
@@ -102,16 +122,15 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
                     np.random.choice(2, 1, p=[randomChoiceRate, optimalChoiceRate])
                 )
                 case.checkTarget(ifOptChoice=optimalChoice)
-                if not t % par.FREQ_HISTOGRAM:
+                if not t % 10:
                     case.computePedHistDenVelAtLinks()
                     case.updateVelocityAllPedestrians()
-                    if (b == numBlocks - 1 and s == simPerBlock - 1):
-                        case.computeWeightsAtLinks(numSim)
 
-            outfile = Path(folderStateNames, "sim_%09d.csv" % numSim)
+            outfile = os.path.join(folderStateNames, "sim_%09d.csv" % numSim)
             case.exportStateMatrix(outnamefile=outfile)
             print(
-                "\n\n ***** Simu %d (t= %.2f sec.)*****" % (numSim, (time.time() - t0))
+                "\n\n ***** Simu %d (t= %.2f)*****"
+                % (numSim, (time.time() - t0) / 60.0)
             )
             print("epsilon greedy - exploration: %f" % randomChoiceRate)
             print(
@@ -122,7 +141,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
             # evaluate survivors in simulation
             survivorsPerSim.append([numSim, np.sum(case.pedDB[:, 10] == 1)])
             fname = f"survivorsPerSim_{numBlocks}x{simPerBlock}.csv"
-            outSurvivors = Path(folderStateNames, fname)
+            outSurvivors = os.path.join(folderStateNames, fname)
             np.savetxt(outSurvivors, np.array(survivorsPerSim), delimiter=",", fmt="%d")
             evacs_list = [evacs[1] for evacs in survivorsPerSim]
             print(
@@ -136,17 +155,19 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
     return
 
 
-def run():
-    simtime = par.SIM_TIME
-    meandeparture = par.MEAN_DEPARTURE
+def kochi_ql_mod():
+    simtime = 30  # min
+    meandeparture = 15  # min
 
-    numSim0 = par.NUM_START
-    numBlocks = par.NUM_BLOCKS
-    simPerBlock = par.NUM_SIM_PER_BLOCK
+    numSim0 = 0
+    numBlocks = 1
+    simPerBlock = 10
 
-    name = f"{simtime}_{meandeparture}_{simPerBlock}"
+    name = f"ql_mod_{simtime}_{meandeparture}_{simPerBlock}"
+    area = "kochi"
 
     run_ql_mod(
+        area=area,
         simtime=simtime,
         meandeparture=meandeparture,
         numSim0=numSim0,
@@ -154,3 +175,56 @@ def run():
         simPerBlock=simPerBlock,
         name=name,
     )
+    return
+
+
+def arahama_ql_mod():
+    simtime = 30  # min
+    meandeparture = 7  # min
+
+    numSim0 = 0
+    numBlocks = 1
+    simPerBlock = 1
+
+    name = f"ql_mod_{simtime}_{meandeparture}_{simPerBlock}"
+    area = "arahama"
+
+    run_ql_mod(
+        area=area,
+        simtime=simtime,
+        meandeparture=meandeparture,
+        numSim0=numSim0,
+        numBlocks=numBlocks,
+        simPerBlock=simPerBlock,
+        name=name,
+    )
+    return
+
+
+def new_kochi_ql_mod():
+    simtime = 30  # min
+    meandeparture = 15  # min
+
+    numSim0 = 0
+    numBlocks = 1
+    simPerBlock = 10
+
+    name = f"ql_{simtime}_{meandeparture}_{simPerBlock}"
+    area = "output"
+
+    run_ql_mod(
+        area=area,
+        simtime=simtime,
+        meandeparture=meandeparture,
+        numSim0=numSim0,
+        numBlocks=numBlocks,
+        simPerBlock=simPerBlock,
+        name=name,
+    )
+    return
+
+
+if __name__ == "__main__":
+    arahama_ql_mod()
+    # kochi_ql_mod()
+    # new_kochi_ql_mod()

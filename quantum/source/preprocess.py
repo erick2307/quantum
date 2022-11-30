@@ -185,8 +185,10 @@ def cleanup():
     # Create folders
     par.DATA_FOLDER = Path(par.CASE_FOLDER, "data")
     par.REF_FOLDER = Path(par.CASE_FOLDER, "ref")
+    par.WEIGHT_FOLDER = Path(par.CASE_FOLDER, "weights")
     Path(par.DATA_FOLDER).mkdir(parents=True, exist_ok=True)
     Path(par.REF_FOLDER).mkdir(parents=True, exist_ok=True)
+    Path(par.WEIGHT_FOLDER).mkdir(parents=True, exist_ok=True)
     # Move files
     currentdir = Path(par.CASE_FOLDER)
     for file in currentdir.glob("*.geojson"):

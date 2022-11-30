@@ -195,9 +195,9 @@ class QLearning:
             )
         return
 
-    def computeWeightsAtLinks(self):
-        filename = "w_%09d.csv" % self.time
-        fout = os.path.join("weights", filename)
+    def computeWeightsAtLinks(self, prefix):
+        filename = f"w_{prefix}_{int(self.time):09d}.csv"
+        fout = os.path.join(par.CASE_FOLDER, "weights", filename)
         np.savetxt(fout, self.populationAtLinks, delimiter=",", fmt="%d")
         return
 
