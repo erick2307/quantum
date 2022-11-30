@@ -24,6 +24,7 @@ def setMatrices(numcolumns=12):
         transitionsdb[i, 0] = nodesdb[i, 0]
         # rewarddb[i,0] = nodesdb[i,0]
 
+        # links where the initial node is equal to the corresponding node
         tmpLinksdb1 = linksdb[linksdb[:, 1] == nodesdb[i, 0]]
         tmpLinksdb2 = linksdb[linksdb[:, 2] == nodesdb[i, 0]]
         numlinks1 = tmpLinksdb1.shape[0]

@@ -17,8 +17,11 @@ from . import setActionsAndTransitions as actrans
 def createBoundingBox(
     area={"north": 33.58, "south": 33.53, "east": 133.58, "west": 133.52}
 ):
-    # create a Bounding Box
-    # returns a shapely geometry
+    """
+    Purpose:
+        Creates a Bounding Box from a dictionary of NSEW geographical coordinates
+    Returns:
+        A shapely geometry"""
     bbox = shp.geometry.box(area["west"], area["south"], area["east"], area["north"])
     return bbox
 
@@ -29,14 +32,13 @@ def createGraph(
     ntype="drive",
     plot=False,
 ):
-    # NEW AREA (Aug, 2021)
-    maprange = area  # Degree 1.0 = 111km. 2.22km x 4.44km square.
+    # Degree 1.0 = 111km. 2.22km x 4.44km square.
     # Obtain the roadmap data from OpenStreetMap by using OSMNX
     G = ox.graph_from_bbox(
-        maprange["north"],
-        maprange["south"],
-        maprange["east"],
-        maprange["west"],
+        area["north"],
+        area["south"],
+        area["east"],
+        area["west"],
         network_type=ntype,
         simplify=True,
     )
@@ -65,12 +67,15 @@ This is a simplified {ntype} type OSM network."""
     edges.to_file(Path(par.CASE_FOLDER, "edges.shp"))
     nedges = G.number_of_edges()
     print(f"{nedges} edges in graph. The edges file was saved as ESRI shapefile")
+    return G_simple
+
+
+def linksAndNodes(plot=False):
     # create database of links and edges
     cln.main()
     print("Database created!")
     if plot:
         cln.plotNetwork()
-    return G_simple
 
 
 def getPrefShelters(pref_code=39, crs="EPSG:6690", filters=False):
@@ -168,7 +173,7 @@ def fixLinksDBAndNodesDB(shelters):
 
 def appendAgents(agentsdb, pop, index, poly):
     # Get a polygon
-    poly_pop = pop.TotalPop.to_list()[index]
+    poly_pop = pop[par.POPULATION_FIELDNAME_IN_FILE].to_list()[index]
     ninarea = pointsWithinPolygon(poly)
     if ninarea.shape[0] == 0:
         return agentsdb
@@ -201,57 +206,93 @@ def cleanup():
         file.rename(Path(par.REF_FOLDER, file.name))
 
 
-def run(aos_file):
-    pref_code = par.PREF_CODE
-    aos_gdf = aos_file  # gpd.read_file(Path(par.CASE_FOLDER, "aos.geojson"), driver="GeoJSON")
-    area = {
+def run(aos_gdf):
+    # AREA OF STUDY
+    par.BBOX = {
         "north": aos_gdf.total_bounds[3],
         "south": aos_gdf.total_bounds[1],
         "east": aos_gdf.total_bounds[2],
         "west": aos_gdf.total_bounds[0],
     }
-    # area = {'north': 33.58, 'south': 33.53,'east': 133.58, 'west': 133.52}
-    crs = par.PJ_CRS
 
     # Get a Bounding Box of the area
-    bbox = createBoundingBox(area=area)
-    aos = gpd.GeoSeries([bbox]).to_json()
+    # bbox = createBoundingBox(area=area)
+    # aos = gpd.GeoSeries([bbox]).to_json()
 
+    # POPULATION
     # Get Population in the Area of Study (Census Data)
-    pop = gp.getPopulationArea(
-        par.PREF_CODE, par.AOS_FILE, par.WK_CRS, par.BEFORE_2011_BOOL
-    )
+    if par.CENSUS_FROM_FILE_BOOL:
+        pop = gpd.read_file(par.CENSUS_FILE)
+    else:
+        pop = gp.getPopulationArea(
+            par.PREF_CODE, par.AOS_FILE, par.WK_CRS, par.BEFORE_2011_BOOL
+        )
     pop_pj = pop.to_crs(par.PJ_CRS)
-    print(f"There is a population of {int(pop['TotalPop'].sum())} people.")
 
-    # Create a Graph object
-    G = createGraph(area=area, crs=crs, ntype=par.OSM_NTYPE, plot=False)
+    # ROAD NETWORK
+    if par.ROAD_NETWORK_FROM_FILE_BOOL:
+        nodes = gpd.read_file(par.NODES_FILE)
+        edges = gpd.read_file(par.EDGES_FILE)
+        edges_pj = edges.to_crs(par.PJ_CRS)
+        edges_pj.to_file(Path(par.CASE_FOLDER, "edges.shp"))
+    else:
+        # Create a Graph object
+        G = createGraph(area=par.BBOX, crs=par.PJ_CRS, ntype=par.OSM_NTYPE, plot=False)
+        nodes, edges = ox.graph_to_gdfs(G)
 
-    # Create a Shelter GeoDataframe
-    shelters = getAreaShelters(
-        area=area, pref_code=pref_code, crs=crs, filter_bool=par.FILTER_SHELTER_BOOL
-    )
-    if shelters.empty:
-        print("There are no shelters in the area. Input a list of node ids")
-        # try block to handle the exception
-        if par.SHELTER_ID_BOOL:
-            shelters_id = par.SHELTER_ID_LIST
-        else:
-            try:
-                shelters_id = []
-                while True:
-                    shelters_id.append(
-                        int(input("Enter a node number to become shelter or ENTER: "))
-                    )
-            # if the input is not-integer, just print the list
-            except:
-                print("Shelter nodes:", shelters_id)
-        shelters = add_shelters(shelters_id)
-    # Fix the nodesdb
+    # Create database of links and nodes
+    linksAndNodes(plot=False)
+
+    # SHELTERS
+    if par.SHELTERS_FROM_FILE_BOOL:
+        shelters = gpd.read_file(par.SHELTERS_FILE)
+        shelters.to_crs(par.PJ_CRS, inplace=True)
+    else:
+        # Create a Shelter GeoDataframe
+        shelters = getAreaShelters(
+            area=par.BBOX,
+            pref_code=par.PREF_CODE,
+            crs=par.PJ_CRS,
+            filter_bool=par.FILTER_SHELTER_BOOL,
+        )
+        if shelters.empty:
+            print("There are no shelters in the area. Input a list of node ids")
+            # try block to handle the exception
+            if par.SHELTER_ID_BOOL:
+                shelters_id = par.SHELTER_ID_LIST
+            else:
+                try:
+                    shelters_id = []
+                    while True:
+                        shelters_id.append(
+                            int(
+                                input(
+                                    "Enter a node number to become shelter or ENTER: "
+                                )
+                            )
+                        )
+                # if the input is not-integer, just print the list
+                except:
+                    print("Shelter nodes:", shelters_id)
+                    shelters = add_shelters(shelters_id)
+
+    # Fix the nodesdb to add shelters
     fixLinksDBAndNodesDB(shelters)
+
+    # REINFORCEMENT LEARNING RELATED
+    # Setup Actions and Transition Matrices
     actrans.setMatrices()
+
+    # AGENTS
+    if par.CENSUS_FROM_FILE_BOOL:
+        pass
+    else:
+        par.POPULATION_FIELDNAME_IN_FILE = "TotalPop"
+    print(
+        f"There is a population of {int(pop[par.POPULATION_FIELDNAME_IN_FILE].sum())} people."
+    )
     # Create the agentsdb
-    agentsdb = np.zeros((int(pop.TotalPop.sum()), 5))
+    agentsdb = np.zeros((int(pop[par.POPULATION_FIELDNAME_IN_FILE].sum()), 5))
     for i, g in enumerate(pop_pj.geometry.to_list()):
         agentsdb = appendAgents(agentsdb, pop=pop_pj, index=i, poly=g)
     last = np.trim_zeros(agentsdb[:, 4], "b").shape[0]
@@ -263,7 +304,5 @@ def run(aos_file):
         header="age,gender,hhType,hhId,Node",
         fmt="%d,%d,%d,%d,%d",
     )
-    # cleanup()
-    nodes, edges = ox.graph_to_gdfs(G)
-    # edges.reset_index(inplace=True)
+
     return pop, shelters, edges, nodes

@@ -7,7 +7,14 @@ import params as par
 from .qlearn import QLearning
 
 
-def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
+def run(
+    simtime=par.SIM_TIME,
+    meandeparture=par.MEAN_DEPARTURE,
+    numSim0=par.NUM_START,
+    numBlocks=par.NUM_BLOCKS,
+    simPerBlock=par.NUM_SIM_PER_BLOCK,
+):
+    name = f"{simtime}_{meandeparture}_{simPerBlock}"
     t0 = time.time()
     agentsProfileName = Path(par.DATA_FOLDER, "agentsdb.csv")
     nodesdbFile = Path(par.DATA_FOLDER, "nodesdb.csv")
@@ -21,7 +28,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
     survivorsPerSim = []
 
     if numSim0 == 0:
-        randomChoiceRate = 0.99
+        randomChoiceRate = 1.0 #0.99
         optimalChoiceRate = 1.0 - randomChoiceRate
         case = QLearning(
             agentsProfileName=agentsProfileName,
@@ -105,7 +112,7 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
                 if not t % par.FREQ_HISTOGRAM:
                     case.computePedHistDenVelAtLinks()
                     case.updateVelocityAllPedestrians()
-                    if (b == numBlocks - 1 and s == simPerBlock - 1):
+                    if b == numBlocks - 1 and s == simPerBlock - 1:
                         case.computeWeightsAtLinks(numSim)
 
             outfile = Path(folderStateNames, "sim_%09d.csv" % numSim)
@@ -134,23 +141,3 @@ def run_ql_mod(simtime, meandeparture, numSim0, numBlocks, simPerBlock, name):
             case = None
             numSim += 1
     return
-
-
-def run():
-    simtime = par.SIM_TIME
-    meandeparture = par.MEAN_DEPARTURE
-
-    numSim0 = par.NUM_START
-    numBlocks = par.NUM_BLOCKS
-    simPerBlock = par.NUM_SIM_PER_BLOCK
-
-    name = f"{simtime}_{meandeparture}_{simPerBlock}"
-
-    run_ql_mod(
-        simtime=simtime,
-        meandeparture=meandeparture,
-        numSim0=numSim0,
-        numBlocks=numBlocks,
-        simPerBlock=simPerBlock,
-        name=name,
-    )

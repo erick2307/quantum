@@ -43,7 +43,8 @@ class QLearning:
         # Parameters to construct histograms of polations at every link: (1) unit length, (2) number of units
         self.popAtLink_HistParam = np.zeros((self.linksdb.shape[0], 2))
         self.popAtLink_HistParam[:, 1] = np.ceil(
-            self.linksdb[:, 3] / 2.0 + 1  # added +1  2022.09.21 for test only
+            self.linksdb[:, 3] / 2.0
+            + 1  # ! added +1 to avoid zeros 2022.09.21 for test only
         )  # assuming length units of about 2 meters
         self.popAtLink_HistParam[:, 0] = (
             self.linksdb[:, 3] / self.popAtLink_HistParam[:, 1]
@@ -472,7 +473,7 @@ class QLearning:
             unitL = self.popAtLink_HistParam[codeLink, 0]
             xAtLink = int(
                 np.floor(dist / unitL) - 1
-            )  # added -1 on 2022.09.21 due to errors on index in line 475
+            )  # ! added -1 on 2022.09.21 due to errors on index in line 475
             speed = (
                 self.speArrPerLink[codeLink, xAtLink] + np.random.rand() * 0.02 - 0.01
             )
@@ -922,7 +923,7 @@ class QLearning:
         self.labelTime = self.fig.text(0, 0, " ")
         return
 
-    def getSnapshotV2(self):
+    def getSnapshotV2(self, area):
         self.p2.remove()
         indx = np.where(self.pedDB[:, 9] <= self.time)[0]
         # 2020Oct07: trying to place color velocity
@@ -947,7 +948,7 @@ class QLearning:
             % (self.time / 60.0, np.sum(self.pedDB[:, 10] == 1), self.pedDB.shape[0]),
         )
         self.fig.savefig(
-            os.path.join("figures", "Figure_%04d.png" % self.snapshotNumber),
+            os.path.join(area, "figures", "Figure_%04d.png" % self.snapshotNumber),
             bbox_inches="tight",
             dpi=150,
         )
@@ -955,8 +956,8 @@ class QLearning:
         self.snapshotNumber += 1
         return
 
-    def makeVideo(self, nameVideo="Simul.avi"):
-        listImagesUS = glob.glob(os.path.join("figures", "*png"))
+    def makeVideo(self, area, nameVideo="Simul.mp4"):
+        listImagesUS = glob.glob(os.path.join(area, "figures", "*png"))
         numSS_ar = np.zeros(len(listImagesUS), dtype=np.int)
         for i, li in enumerate(listImagesUS):
             numSS_ar[i] = int(li[-8:-4])
@@ -970,7 +971,7 @@ class QLearning:
         height_im, width_im, layers_im = img.shape
         video = cv2.VideoWriter(
             nameVideo,
-            cv2.VideoWriter_fourcc("M", "J", "P", "G"),
+            cv2.VideoWriter_fourcc("m", "p", "4", "v"),
             15,
             (width_im, height_im),
         )  # Only works with openCV3

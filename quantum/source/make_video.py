@@ -3,20 +3,19 @@
 
 import numpy as np
 import os
-from qlearn import QLearning
+from .qlearn import QLearning
 import time
 import pickle
 from pathlib import Path
+import params as par
 
 
-def createVideo(
-    filename, foldername, method="ql", area="kochi", simtime=30, meandeparture=15
-):
+def createVideo(filename, foldername, area, simtime, meandeparture):
     # setup
     t0 = time.time()
     fn = Path(area, foldername, filename)
-    videoNamefile = f"{method}_{area}_{filename[:-4]}.mp4"
-    optimalChoiceRate = 0.99
+    videoNamefile = f"video_{filename[:-4]}.mp4"
+    optimalChoiceRate = 1.0
     randomChoiceRate = 1.0 - optimalChoiceRate
     meanRayleighTest = meandeparture * 60
     simulTime = simtime * 60
@@ -30,7 +29,7 @@ def createVideo(
 
     # check folders
     resultsfolder = os.path.join(area, "results")
-    figuresfolder = os.path.join("figures")
+    figuresfolder = os.path.join(area, "figures")
     if not os.path.exists(resultsfolder):
         os.mkdir(resultsfolder)
     if not os.path.exists(figuresfolder):
@@ -44,7 +43,6 @@ def createVideo(
         transNodedbFile=transNodedbFile,
         meanRayleigh=meanRayleighTest,
         discount=0.9,
-        folderStateNames=foldername,
     )
 
     # input policy
@@ -65,9 +63,8 @@ def createVideo(
             np.random.choice(2, p=[randomChoiceRate, optimalChoiceRate])
         )
         case.checkTarget(ifOptChoice=optimalChoice)
-        if not t % 10:
-            print(t)
-            case.getSnapshotV2()
+        if not t % par.FREQ_HISTOGRAM:
+            case.getSnapshotV2(area)
             case.computePedHistDenVelAtLinks()
             case.updateVelocityAllPedestrians()
 
@@ -84,7 +81,7 @@ def createVideo(
     f.close()
     # np.savetxt(fname, case.expeStat, delimiter=',')
 
-    case.makeVideo(nameVideo=videoNamefile)
+    case.makeVideo(area, nameVideo=videoNamefile)
     case.destroyCanvas()
     # case.deleteFigures()
     case = None
@@ -93,17 +90,15 @@ def createVideo(
 
 
 def main():
-    filename = "sim_000000153.csv"  # name of state matrix to load
-    area = "kochi"
-    foldername = "state_ql_mod_30_15_1000"  # folder where state matrices are saved
-    timeSimulation = 60  # total time of simulation in minutes
+    filename = "sim_000000010.csv"  # name of state matrix to load
+    area = "1669825035879_kochi_small"
+    foldername = "state_15_5_10"  # folder where state matrices are saved
+    timeSimulation = 15  # total time of simulation in minutes
     meandeparture = 5  # this is the actual evacuation behavior in minutes
     # (not necessary the trained behavior)
-    method = "ql"
     createVideo(
         filename=filename,
         foldername=foldername,
-        method=method,
         area=area,
         simtime=timeSimulation,
         meandeparture=meandeparture,

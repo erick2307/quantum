@@ -23,8 +23,8 @@ def readEdges(iShpPath):
     MaxDistSquared = 16  # means the maximum distance is 4
 
     for feature in layer:
-        fromID = feature.GetField("from")
-        toID = feature.GetField("to")
+        # fromID = feature.GetField("from")
+        # toID = feature.GetField("to")
         geom = feature.GetGeometryRef()
         # print("from-to:", fromID, toID)
         # print(geom)
@@ -56,8 +56,9 @@ def readEdges(iShpPath):
                     countN += 1
                     mNodes[countMN, :] = listNo[-1]
                     countMN += 1
-                listEd.append([countE, nodeSCode, nodeTCode, 0, 3])
-                countE += 1
+                if nodeSCode != nodeTCode:
+                    listEd.append([countE, nodeSCode, nodeTCode, 0, 3])
+                    countE += 1
             else:
                 nodeTCode = countN  # node target code
                 listNo.append([nodeTCode, pt[0], pt[1]])
@@ -72,12 +73,10 @@ def readEdges(iShpPath):
     listEd = np.array(listEd)
     for i in range(listEd.shape[0]):
         node0 = int(listEd[i, 1])
-        # print(node0)
-        # print("listNo[node0]",listNo[node0])
-        x0 = listNo[node0, 1:]
         node1 = int(listEd[i, 2])
-        x1 = listNo[node1, 1:]
-        listEd[i, 3] = np.linalg.norm(x1 - x0)
+        xy0 = listNo[node0, 1:]
+        xy1 = listNo[node1, 1:]
+        listEd[i, 3] = np.linalg.norm(xy1 - xy0)
 
     return np.array(listNo), np.array(listEd)
 
