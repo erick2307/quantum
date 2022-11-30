@@ -195,7 +195,9 @@ def cleanup():
         file.rename(Path(par.REF_FOLDER, file.name))
     for file in currentdir.glob("*.csv"):
         file.rename(Path(par.DATA_FOLDER, file.name))
-    for file in currentdir.glob("*.shp"):
+    for file in currentdir.glob("edges.*"):
+        file.rename(Path(par.REF_FOLDER, file.name))
+    for file in currentdir.glob("*.gpkg"):
         file.rename(Path(par.REF_FOLDER, file.name))
 
 
