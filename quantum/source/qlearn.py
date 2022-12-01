@@ -21,6 +21,7 @@ class QLearning:
         discount,
     ):
         # setting the rewards for survive or dead
+        self.cumReward = 0
         self.surviveReward = par.SURVIVE_REWARD
         self.deadReward = par.DEAD_REWARD
         self.stepReward = par.STEP_REWARD
@@ -646,6 +647,7 @@ class QLearning:
                 currentReward - self.stateMat[current_S, 11 + current_A]
             )
             self.stateMat[current_S, 21 + current_A] += 1
+            self.cumReward += currentReward
 
         preReward = self.stepReward * (current_t - pre_t)
         self.stateMat[pre_S, 11 + pre_A] += alpha * (
@@ -654,6 +656,7 @@ class QLearning:
             - self.stateMat[pre_S, 11 + pre_A]
         )
         self.stateMat[pre_S, 21 + pre_A] += 1
+        self.cumReward += preReward
         return
 
     ########## functions to use shortest path

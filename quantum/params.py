@@ -52,10 +52,10 @@ NODES_FILE = "/Volumes/Pegasus32/kochi/zones/z01_nodes.geojson"
 
 # Scenario parameters
 SIM_TIME = 30  # in minutes
-MEAN_DEPARTURE = 15  # in minutes
+MEAN_DEPARTURE = 0  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
-NUM_SIM_PER_BLOCK = [1]  # 5hr, 2d 2h, 20d
+NUM_SIM_PER_BLOCK = [100]  # 5hr, 2d 2h, 20d
 
 # Reinforcement Learning parameters
 GLIE_PERCENTAGE = 1.0  # it was on 0.8

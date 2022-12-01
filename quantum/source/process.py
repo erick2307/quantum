@@ -26,9 +26,10 @@ def run(
     meanRayleighTest = meandeparture * 60
     simulTime = simtime * 60  # step is in seconds
     survivorsPerSim = []
+    cumulativeReward = []
 
     if numSim0 == 0:
-        randomChoiceRate = 1.0 #0.99
+        randomChoiceRate = 1.0  # 0.99
         optimalChoiceRate = 1.0 - randomChoiceRate
         case = QLearning(
             agentsProfileName=agentsProfileName,
@@ -59,7 +60,7 @@ def run(
             f"""\n\n ***** Simu {numSim0:d}
               (t= {(time.time()-t0):.2f} sec.)*****"""
         )
-        print("epsilon greedy - exploration: %f" % randomChoiceRate)
+        print("epsilon greedy - exploration: %.2f" % randomChoiceRate)
         print(
             f"""survived: {np.sum(case.pedDB[:,10] == 1)}
               / total: {totalagents}"""
@@ -69,6 +70,13 @@ def run(
         fname = f"survivorsPerSim_{numBlocks}x{simPerBlock}.csv"
         outSurvivors = Path(folderStateNames, fname)
         np.savetxt(outSurvivors, np.array(survivorsPerSim), delimiter=",", fmt="%d")
+
+        cumulativeReward.append([numSim0, case.cumReward])
+        fname = f"cumRewardPerSim_{numBlocks}x{simPerBlock}.csv"
+        outReward = Path(folderStateNames, fname)
+        np.savetxt(outReward, np.array(cumulativeReward), delimiter=",", fmt="%d")
+        print(f"Cumulative Reward: {case.cumReward}")
+
         evacs_list = [evacs[1] for evacs in survivorsPerSim]
         print(
             f"""Max value:{max(evacs_list)},
@@ -120,7 +128,7 @@ def run(
             print(
                 "\n\n ***** Simu %d (t= %.2f sec.)*****" % (numSim, (time.time() - t0))
             )
-            print("epsilon greedy - exploration: %f" % randomChoiceRate)
+            print("epsilon greedy - exploration: %.2f" % randomChoiceRate)
             print(
                 f"""survived: {np.sum(case.pedDB[:,10] == 1)}
                   / total: {totalagents}"""
@@ -131,6 +139,13 @@ def run(
             fname = f"survivorsPerSim_{numBlocks}x{simPerBlock}.csv"
             outSurvivors = Path(folderStateNames, fname)
             np.savetxt(outSurvivors, np.array(survivorsPerSim), delimiter=",", fmt="%d")
+
+            cumulativeReward.append([numSim, case.cumReward])
+            fname = f"cumRewardPerSim_{numBlocks}x{simPerBlock}.csv"
+            outReward = Path(folderStateNames, fname)
+            np.savetxt(outReward, np.array(cumulativeReward), delimiter=",", fmt="%d")
+            print(f"Cumulative Reward: {case.cumReward}")
+
             evacs_list = [evacs[1] for evacs in survivorsPerSim]
             print(
                 f"""Max value:{max(evacs_list)},

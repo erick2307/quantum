@@ -8,11 +8,9 @@ __pycache__/
 
 # Ignore videos and figures
 *.avi
-*.png
-*.csv
-*.pkl
 .DS_Store
 tests/
+runs/
 
 # Distribution / packaging
 .Python
