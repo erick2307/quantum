@@ -51,8 +51,8 @@ EDGES_FILE = "/Volumes/Pegasus32/kochi/zones/z01_edges.geojson"
 NODES_FILE = "/Volumes/Pegasus32/kochi/zones/z01_nodes.geojson"
 
 # Scenario parameters
-SIM_TIME = 30  # in minutes
-MEAN_DEPARTURE = 0  # in minutes
+SIM_TIME = 15 # in minutes
+MEAN_DEPARTURE = 5  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
 NUM_SIM_PER_BLOCK = [100]  # 5hr, 2d 2h, 20d
