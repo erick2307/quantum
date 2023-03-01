@@ -12,10 +12,6 @@ This repository prepares the data and runs a reinforcement learning-based tsunam
 
 ---
 quantum  
- ┣ docs  
- ┃ ┣ `0_setup.ipynb`  
- ┃ ┣ `1_preprocess.ipynb`  
- ┃ ┗ `analysis.ipynb`  
  ┣ quantum  
  ┃ ┣ source  
  ┃ ┃ ┣ `__init__.py`  
