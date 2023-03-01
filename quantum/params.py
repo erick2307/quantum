@@ -1,22 +1,18 @@
 # Input parameters
-CASE_NAME = "Zone-1-20-5"
-
-# Run conditions
-MULTIPLE_RUNS_BOOL = True  # ! requires a list in NUM_SIM_PER_BLOCK
-
-# SETUP_BOOL = True
-# CLIP_TO_AOS_BOOL = True
+CASE_NAME = "Case"
 
 # Set email for notifications
 EMAIL_BOOL = True
-SERVER_HOST = "mail.irides.tohoku.ac.jp"
+SERVER_HOST = "server.jp"
 PORT = 587
-EMAIL = "mas@irides.tohoku.ac.jp"
-EMAIL_PWD = "IRIDES_EMAIL_PWD"  # this is the name in the os environment variable
+EMAIL = "name@email.jp"
+EMAIL_PWD = "pwd"  # this is the name in the os environment variable
 
 # Census data source
 CENSUS_FROM_FILE_BOOL = True  # to use the file provided in CENSUS_FILE
-POPULATION_FIELDNAME_IN_FILE = "M_TOTPOP_H" #for MSSD:"population"; for Census:"M_TOTPOP_H"
+POPULATION_FIELDNAME_IN_FILE = (
+    "M_TOTPOP_H"  # for MSSD:"population"; for Census:"M_TOTPOP_H"
+)
 # If false needs to set below
 BEFORE_2011_BOOL = False  # in case population should be before 3.11
 
@@ -29,7 +25,7 @@ FILTER_SHELTER_BOOL = True
 SHELTER_ID_LIST = []
 
 # In case census or shelters are taken from database
-PREF_CODE = 39  # Miyagi is 4, Kochi is 39, Fukushima is 7
+PREF_CODE = 39  # Kochi is 39
 
 # Run options
 WK_CRS = 4326  # working CRS in GCS
@@ -42,20 +38,19 @@ ROAD_NETWORK_FROM_FILE_BOOL = (
 OSM_NTYPE = "drive"  # type of network for OSM
 
 # File locations
-AOS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mesh.geojson"
-CENSUS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_census.geojson"
-SHELTERS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_shelters.geojson"
-# MESH_FILE = "/Volumes/Pegasus32/kochi/zones/zone02/z02_mesh.geojson"
-# TOWN_FILE = None
-EDGES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_edges.geojson"
-NODES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_nodes.geojson"
+AOS_FILE = "path/to/aos_file.geojson"
+CENSUS_FILE = "path/to/census_file.geojson"
+SHELTERS_FILE = "path/to/shelters_file.geojson"
+EDGES_FILE = "path/to/edges_file.geojson"
+NODES_FILE = "path/to/nodes_file.geojson"
 
 # Scenario parameters
-SIM_TIME = 20 # in minutes
+SIM_TIME = 20  # in minutes
 MEAN_DEPARTURE = 5  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
-NUM_SIM_PER_BLOCK = [100, 1000, 10000]  # 5hr, 2d 2h, 20d
+MULTIPLE_RUNS_BOOL = True  # requires a list in NUM_SIM_PER_BLOCK
+NUM_SIM_PER_BLOCK = [100, 1_000, 10_000]  # 5hr, 2d 2h, 20d
 
 # Reinforcement Learning parameters
 GLIE_PERCENTAGE = 1.0  # it was on 0.8
