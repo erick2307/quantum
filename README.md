@@ -26,8 +26,6 @@ quantum
  ┃ ┃ ┗ `setActionsAndTransitions.py`  
  ┃ ┣ `params.py`  
  ┃ ┗ `runner.py`  
- ┣ .gitattributes  
- ┣ .gitignore  
  ┣ LICENSE  
  ┣ README.md  
  ┗ requirements.txt  
