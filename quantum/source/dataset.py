@@ -64,36 +64,3 @@ def run():
     # save_to_case_folder(town, "town")
 
     pre.cleanup()
-
-    # if not check_file(par.CENSUS_FILE):
-    #     # get census
-    #     pass
-    # census = gpd.read_file(par.CENSUS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-    # if not check_file(par.SHELTERS_FILE):
-    #     # get shelters
-    #     pass
-    # shelters = gpd.read_file(par.SHELTERS_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-    # if not check_file(par.MESH_FILE):
-    #     # get mesh
-    #     pass
-    # mesh = gpd.read_file(par.MESH_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-    # if not check_file(par.TOWN_FILE):
-    #     # get town
-    #     pass
-    # town = gpd.read_file(par.TOWN_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-    # if not check_file(par.EDGES_FILE):
-    #     # get edges
-    #     pass
-    # edges = gpd.read_file(par.EDGES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-    # if not check_file(par.NODES_FILE):
-    #     # get nodes
-    #     pass
-    # nodes = gpd.read_file(par.NODES_FILE, driver="GeoJSON").to_crs(par.WK_CRS)
-
-    # if par.CLIP_TO_AOS_BOOL:
-    #     census = census.clip(aos)
-    #     shelters = shelters.clip(aos)
-    #     mesh = mesh.clip(aos)
-    #     town = town.clip(aos)
-    #     edges = edges.clip(aos)
-    #     nodes = nodes.clip(aos)

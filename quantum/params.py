@@ -10,6 +10,7 @@ EMAIL_PWD = "pwd"  # this is the name in the os environment variable
 
 # Census data source
 CENSUS_FROM_FILE_BOOL = True  # to use the file provided in CENSUS_FILE
+
 POPULATION_FIELDNAME_IN_FILE = (
     "M_TOTPOP_H"  # for MSSD:"population"; for Census:"M_TOTPOP_H"
 )
@@ -18,10 +19,13 @@ BEFORE_2011_BOOL = False  # in case population should be before 3.11
 
 # Shelter data source
 SHELTERS_FROM_FILE_BOOL = True  # to use the file provided in SHELTERS_FILE
+SHELTER_DATA_ROOT_FOLDER = "path/to/data/rootfolder" #PAREA HAZARD root folder
+SHELTER_DATA_FOLDER = "path/to/datafolder" #PAREA HAZARD folder
 # if false needs paramters below
 SHELTER_ID_BOOL = False  # if True read list of nodes id from SHELTER_ID_LIST variable
 # if False prompts for id nodes
 FILTER_SHELTER_BOOL = True
+FILTER_KEY = "str"
 SHELTER_ID_LIST = []
 
 # In case census or shelters are taken from database

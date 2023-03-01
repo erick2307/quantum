@@ -79,14 +79,14 @@ def linksAndNodes(plot=False):
 
 
 def getPrefShelters(pref_code=39, crs="EPSG:6690", filters=False):
-    rootfolder = "/Volumes/Pegasus32/data/"
-    datafolder = "PAREA_Hazard_2018/data/世界測地系"
+    rootfolder = par.SHELTER_DATA_ROOT_FOLDER
+    datafolder = par.SHELTER_DATA_FOLDER
     areafile = f"{pref_code:02d}/PHRP{pref_code:02d}18.shp"
     path = os.path.join(rootfolder, datafolder, areafile)
     shelters_gc = gpd.read_file(path, encoding="shift_jis")
     shelters = shelters_gc.to_crs(crs)
     if filters:
-        shelters = shelters[shelters["TUNAMI"] == 1]
+        shelters = shelters[shelters[par.FILTER_KEY] == 1]
     return shelters
 
 
