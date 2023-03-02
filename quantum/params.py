@@ -16,7 +16,9 @@ EMAIL_PWD = "IRIDES_EMAIL_PWD"  # this is the name in the os environment variabl
 
 # Census data source
 CENSUS_FROM_FILE_BOOL = True  # to use the file provided in CENSUS_FILE
-POPULATION_FIELDNAME_IN_FILE = "M_TOTPOP_H" #for MSSD:"population"; for Census:"M_TOTPOP_H"
+POPULATION_FIELDNAME_IN_FILE = (
+    "M_TOTPOP_H"  # for MSSD:"population"; for Census:"M_TOTPOP_H"
+)
 # If false needs to set below
 BEFORE_2011_BOOL = False  # in case population should be before 3.11
 
@@ -51,11 +53,11 @@ EDGES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_edges.geojson"
 NODES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_nodes.geojson"
 
 # Scenario parameters
-SIM_TIME = 20 # in minutes
+SIM_TIME = 20  # in minutes
 MEAN_DEPARTURE = 5  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
-NUM_SIM_PER_BLOCK = [100, 1000, 10000]  # 5hr, 2d 2h, 20d
+NUM_SIM_PER_BLOCK = [100]  # 5hr, 2d 2h, 20d
 
 # Reinforcement Learning parameters
 GLIE_PERCENTAGE = 1.0  # it was on 0.8
