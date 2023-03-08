@@ -123,4 +123,4 @@ quantum
 
 ## **TO DO**
 
-:stop_sign: Add email and pwd as variables.  
+:stop_sign: Zone Database needs to be checked (SIM_TIME always 20min?)
