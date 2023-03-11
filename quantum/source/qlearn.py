@@ -4,6 +4,8 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import glob
+import pandas as pd
 import params as par
 
 plt.ioff()
@@ -201,6 +203,24 @@ class QLearning:
         filename = f"w_{prefix}_{int(self.time):09d}.csv"
         fout = os.path.join(par.CASE_FOLDER, "weights", filename)
         np.savetxt(fout, self.populationAtLinks, delimiter=",", fmt="%d")
+        return
+    
+    def computeMaxWeightsAtLinks(self, prefix):
+        fin = os.path.join(par.CASE_FOLDER, "weights/*.csv")
+        filename = f"w_{prefix}_acc.csv"
+        fout = os.path.join(par.CASE_FOLDER, "weights", filename)
+        
+        cases = sorted(glob.glob(fout))
+        df = pd.read_csv(cases[0],names=['link','weight'])
+        w = np.zeros((df.shape[0],2),dtype=np.int16)
+        w[:,0]=df.link
+        for case in cases[1:]:
+            df = pd.read_csv(case,names=['link','weight'])
+            for i in range(df.shape[0]):
+                if w[i,1] < df['weight'].iloc[i]:
+                    w[i,1] = df['weight'].iloc[i]
+        wdf = pd.DataFrame(w,columns=['link','weight'])
+        wdf.to_csv('acc_weight_Zone-1-60-20.csv',index=False)
         return
 
     def getPedHistAtLink(self, codeLink):
