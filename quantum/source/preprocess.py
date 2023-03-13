@@ -220,9 +220,9 @@ def run(aos_gdf):
     # aos = gpd.GeoSeries([bbox]).to_json()
 
     # POPULATION
-    # Get Population in the Area of Study (Census Data)
-    if par.CENSUS_FROM_FILE_BOOL:
-        pop = gpd.read_file(par.CENSUS_FILE)
+    # Get Population in the Area of Study
+    if par.POPULATION_FROM_FILE_BOOL:
+        pop = gpd.read_file(par.POPULATION_FILE)
     else:
         pop = gp.getPopulationArea(
             par.PREF_CODE, par.AOS_FILE, par.WK_CRS, par.BEFORE_2011_BOOL
@@ -284,7 +284,7 @@ def run(aos_gdf):
     actrans.setMatrices()
 
     # AGENTS
-    if par.CENSUS_FROM_FILE_BOOL:
+    if par.POPULATION_FROM_FILE_BOOL:
         pass
     else:
         par.POPULATION_FIELDNAME_IN_FILE = "TotalPop"
