@@ -122,8 +122,8 @@ def run(
                     case.updateVelocityAllPedestrians()
                     if b == numBlocks - 1 and s == simPerBlock - 1:
                         case.computeWeightsAtLinks(numSim)
-            
-            case.computeMaxWeightsAtLinks(numSim)
+
+            # case.computeMaxWeightsAtLinks(numSim)
             outfile = Path(folderStateNames, "sim_%09d.csv" % numSim)
             case.exportStateMatrix(outnamefile=outfile)
             print(

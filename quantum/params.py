@@ -1,5 +1,5 @@
 # Input parameters
-CASE_NAME = "Zone-1-mssd-c6-30-5"
+CASE_NAME = "Test_Z_Zone-1-mssd-c6-30-5"
 
 # Run conditions
 MULTIPLE_RUNS_BOOL = True
@@ -47,17 +47,17 @@ OSM_NTYPE = "drive"  # type of network for OSM
 AOS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mesh.geojson"
 POPULATION_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mssd_202203280600.geojson"
 SHELTERS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_shelters.geojson"
-# MESH_FILE = '/Volumes/Pegasus32/kochi/zones/zone01/z01_mesh.geojson'
+MESH_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mesh.geojson"
 # TOWN_FILE = 'None'
 EDGES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_edges.geojson"
 NODES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_nodes.geojson"
 
 # Scenario parameters
-SIM_TIME = 30  # in minutes
-MEAN_DEPARTURE = 5  # in minutes
+SIM_TIME = 15  # in minutes
+MEAN_DEPARTURE = 10  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
-NUM_SIM_PER_BLOCK = [100]  # 5hr, 2d 2h, 20d
+NUM_SIM_PER_BLOCK = [5]  # 5hr, 2d 2h, 20d
 
 # Reinforcement Learning parameters
 GLIE_PERCENTAGE = 1.0  # it was on 0.8

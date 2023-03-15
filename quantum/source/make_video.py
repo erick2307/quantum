@@ -14,7 +14,7 @@ def createVideo(filename, foldername, area, simtime, meandeparture):
     # setup
     t0 = time.time()
     fn = Path(area, foldername, filename)
-    videoNamefile = f"{area}_{filename[:-4]}.mp4"
+    videoNamefile = f"./{area}/{area}_{filename[:-4]}.mp4"
     optimalChoiceRate = 1.0
     randomChoiceRate = 1.0 - optimalChoiceRate
     meanRayleighTest = meandeparture * 60

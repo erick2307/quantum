@@ -27,6 +27,7 @@ if __name__ == "__main__":
                 simtime=par.SIM_TIME,
                 meandeparture=par.MEAN_DEPARTURE,
             )
+            source.calculate_weights.create_acc_weights()
             if par.EMAIL_BOOL:
                 pwd = os.environ.get(par.EMAIL_PWD)
                 end = time.time() - start
