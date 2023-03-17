@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_weights(filename):
+    plt.close()
     accw = np.loadtxt(filename, skiprows=1, delimiter=",", usecols=1)
     N, bins, patches = plt.hist(accw, bins=[-1, 0, 1, 5, 10, 25, 50, 100], log=True)
     # Random facecolor for each bar
@@ -18,6 +19,7 @@ def plot_weights(filename):
     )
     plt.xlabel(f"Number of evacuees")
     plt.ylabel(f"Frequency")
+    # plt.ylim(0, 10**4)
     plt.xticks(ticks=bins[2:], labels=bins[2:], rotation=45)
     plt.savefig(f"{filename[:-4]}.png", dpi=300)
     return

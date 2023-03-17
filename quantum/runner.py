@@ -30,8 +30,9 @@ if __name__ == "__main__":
             source.calculate_weights.create_acc_weights()
             if par.EMAIL_BOOL:
                 pwd = os.environ.get(par.EMAIL_PWD)
+                pc_name = os.environ.get("PC_NAME")
                 end = time.time() - start
-                msg = f"Experiment {i}: {exp} runs finished on {end:.2f} sec."
+                msg = f"QUANTUM at {pc_name} - Experiment {i}: {exp} runs finished on {end:.2f} sec."
                 source.send_email.SendMail(PASSWORD=pwd, MESSAGE=msg)
 
 # Use this command to run in terminal
