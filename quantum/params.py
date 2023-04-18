@@ -1,5 +1,5 @@
 # Input parameters
-CASE_NAME = "Test_Z_Zone-1-mssd-c6-30-5"
+CASE_NAME = "Zone-6-15-5"
 
 # Run conditions
 MULTIPLE_RUNS_BOOL = True
@@ -15,9 +15,9 @@ EMAIL = "mas@irides.tohoku.ac.jp"
 EMAIL_PWD = "IRIDES_EMAIL_PWD"  # this is the name in the os environment variable
 
 # Census data source
-POPULATION_FROM_FILE_BOOL = True  # to use the file provided in CENSUS_FILE
+POPULATION_FROM_FILE_BOOL = True  # to use the file provided in POPULATION_FILE
 POPULATION_FIELDNAME_IN_FILE = (
-    "population"  # for MSSD:"population"; for Census:"M_TOTPOP_H"
+    "M_TOTPOP_H"  # for MSSD:"population"; for Census:"M_TOTPOP_H"
 )
 # If false needs to set below
 BEFORE_2011_BOOL = False  # in case population should be before 3.11
@@ -44,20 +44,20 @@ ROAD_NETWORK_FROM_FILE_BOOL = (
 OSM_NTYPE = "drive"  # type of network for OSM
 
 # File locations
-AOS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mesh.geojson"
-POPULATION_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mssd_202203280600.geojson"
-SHELTERS_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_shelters.geojson"
-MESH_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_mesh.geojson"
+AOS_FILE = "/Volumes/Pegasus32/kochi/zones/zone06/z06_mesh.geojson"
+POPULATION_FILE = "/Volumes/Pegasus32/kochi/zones/zone06/z06_census.geojson"
+SHELTERS_FILE = "/Volumes/Pegasus32/kochi/zones/zone06/z06_shelters.geojson"
+MESH_FILE = "/Volumes/Pegasus32/kochi/zones/zone06/z06_mesh.geojson"
 # TOWN_FILE = 'None'
-EDGES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_edges.geojson"
-NODES_FILE = "/Volumes/Pegasus32/kochi/zones/zone01/z01_nodes.geojson"
+EDGES_FILE = "/Volumes/Pegasus32/kochi/zones/zone06/z06_edges.geojson"
+NODES_FILE = "/Volumes/Pegasus32/kochi/zones/zone06/z06_nodes.geojson"
 
 # Scenario parameters
 SIM_TIME = 15  # in minutes
-MEAN_DEPARTURE = 10  # in minutes
+MEAN_DEPARTURE = 5  # in minutes
 NUM_START = 0  # to start from interemediate point
 NUM_BLOCKS = 1  # to act GLIE in various blocks
-NUM_SIM_PER_BLOCK = [5]  # 5hr, 2d 2h, 20d
+NUM_SIM_PER_BLOCK = [100]  # 5hr, 2d 2h, 20d
 
 # Reinforcement Learning parameters
 GLIE_PERCENTAGE = 1.0  # it was on 0.8
